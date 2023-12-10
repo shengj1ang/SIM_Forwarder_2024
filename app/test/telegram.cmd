@@ -1,4 +1,4 @@
 @echo off
 cd ../
-python main.py telegram config/15961485300.ini
+python main.py telegram config/default.ini
 pause exit
