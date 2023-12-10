@@ -2,9 +2,10 @@ Changes in SIM_Forwarder_2024:
 	1. Use Sqlite as database, instead of file system.
 	2. Time will be saved as timestamp. 3 types of log: TERMINAL(pyserial), LOG_TG(Telegram), LOG(std_output)
 	3. Remove virtual environment. Use more python native methods to implement functions and achieve the best compatibility.
-	4. Separation of front and back ends: main.py, web.py, console.py
+	4. Separation of front and back ends: main.py, web.py, console.py (Removed)
 
 Database Desgin:
+
 
 CREATE TABLE "calls" (
 	"timestamp"	TEXT,
