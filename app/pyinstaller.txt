@@ -1,0 +1,4 @@
+https://stackoverflow.com/questions/69776492/indexerror-tuple-index-out-of-range-when-i-try-to-create-an-executable-from-a-p
+
+pyinstaller --onefile main.py
+

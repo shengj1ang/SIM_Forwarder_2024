@@ -1,0 +1,22 @@
+1. 写个sqlite语句，删除logs表中type不为LOG,Log_TG和Terminal的所有行
+	DELETE FROM logs WHERE type NOT IN ('LOG','LOG_TG', 'Terminal');
+
+2. 写个sqlite语句，列出logs表中，timestamp为"0"的项
+	SELECT * FROM logs WHERE timestamp = '0';
+
+3. 要将 logs 表中的数据按照 timestamp 字段（字符串类型）排序，
+	并将排序后的数据更新到表中，你需要执行两步操作：
+	首先，将排序后的数据存储到一个新的临时表中；
+	其次，删除原表中的所有数据并将临时表中的数据复制回原表。
+	这是因为SQLite不直接支持“就地”重新排序表的内容。
+	CREATE TEMPORARY TABLE temp_logs AS SELECT * FROM logs ORDER BY timestamp ASC;
+	DELETE FROM logs;
+	INSERT INTO logs SELECT * FROM temp_logs;
+	DROP TABLE temp_logs;
+4. VACUUM;
+
+
+写一个sqlite3语句，要求查询logs表中，content中“Program Starts”出现的次数
+SELECT COUNT(*) 
+FROM logs 
+WHERE content LIKE '%Program Starts%';

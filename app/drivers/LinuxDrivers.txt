@@ -1,0 +1,3 @@
+https://github.com/skyrocknroll/CH341SER_LINUX
+https://github.com/juliagoda/CH341SER
+https://github.com/WCHSoftGroup/ch341ser_linux

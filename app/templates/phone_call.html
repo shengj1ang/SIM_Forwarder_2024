@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Phone</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+	<meta name="viewport" content="width=device-width, initial-scale=1"/>
+	<link rel="icon" href="https://static.kkk.plus/favicon/favicon.png" sizes="23x23" type="image/x-icon">
+</head>
+<body>
+    <div class="container mt-5">
+        <h2>Make A Call</h2>
+        <form id="callForm">
+            <div class="form-group">
+                <label for="caller">From: </label>
+                <input type="text" class="form-control" id="caller" name="from" value="{{fm}}" required>
+            </div>
+            <div class="form-group">
+                <label for="receiver">To: </label>
+                <input type="text" class="form-control" id="receiver" name="to" required>
+            </div>
+            <button type="submit" class="btn btn-primary">Call</button>
+        </form>
+        <div id="callResponse" class="mt-3"></div>
+    </div>
+
+    <script>
+        document.getElementById('callForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const formData = new FormData(this);
+			const apiUrl = `/api/phone/call`;
+
+            fetch(apiUrl, {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                let callResponse = document.getElementById('callResponse');
+                if (data.result === 'suc') {
+                    callResponse.innerHTML = `<div class="alert alert-success">Successfully Make The Call: ${data.detail}</div>`;
+                } else {
+                    callResponse.innerHTML = `<div class="alert alert-danger">Fail To Call: ${data.detail}</div>`;
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                document.getElementById('callResponse').innerHTML = `<div class="alert alert-danger">An error occurred during the call</div>`;
+            });
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,9 @@
+.DS_Store
+venv
+bats/*
+!bats/SIM_FORWARDER-Example.cmd
+!bats/SIM_FORWARDER-Example-python.cmd
+app/config/*
+!app/config/default.ini
+app/database/mydatabase.db
+app/database/import-data-from-old-version/data.old.7z
