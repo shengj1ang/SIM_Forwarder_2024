@@ -116,7 +116,13 @@ def at_initialize():
     #ser.write('AT+CCID'.encode('utf-8') + b'\r\n');time.sleep(1);db.log("TERMINAL",str(ser.readline())) #读取ICCID号
     #ser.write('AT+CPBS="ON"'.encode('utf-8') + b'\r\n');time.sleep(1);db.log("TERMINAL",str(ser.readline())) #将电话存贮位置选择为本机号码列表
     #ser.write('AT+CPBW=1'.encode('utf-8') + b'\r\n');time.sleep(1);db.log("TERMINAL",str(ser.readline())) #储存本机号码
-    ser.write('AT+CNUM'.encode('utf-8') + b'\r\n');time.sleep(1);db.log("TERMINAL",str(ser.readline())) #读取本机号码
+    #ser.write('AT+CNUM'.encode('utf-8') + b'\r\n');time.sleep(1);db.log("TERMINAL",str(ser.readline())) #读取本机号码
+    #ser.write('AT+CSQ'.encode('utf-8') + b'\r\n');time.sleep(1);db.log("TERMINAL",str(ser.readline())) #检查网络信号强度和SIM卡情况命令返回：+CSQ: **,##
+          #其中**应在10到31之间，数值越大表明信号质量越好，##应为99。
+          #否则应检查天线或SIM卡是否正确安装
+    #ser.write('AT+CGMR'.encode('utf-8') + b'\r\n');time.sleep(1);db.log("TERMINAL",str(ser.readline())) #查询模块版本
+    #ser.write('AT+COPS=?'.encode('utf-8') + b'\r\n');time.sleep(1);db.log("TERMINAL",str(ser.readline())) #搜网
+    
     return True
 
 def at_send_en_message(phonenum,text):

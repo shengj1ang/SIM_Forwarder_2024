@@ -1,6 +1,6 @@
 import serial
 import serial.tools.list_ports
-
+import time
 def DebugSerial():
     print("mode: debug-serial")
     serialPort=input("Port: ")
@@ -34,8 +34,8 @@ def DebugSerial():
         #     print(ex)
         #     pass
             
-        except:
-            print("Something else went wrong")
+        except Exception as ex:
+            print(f"Something else went wrong: {str(ex)}")
         
     ser.close()
     return True
