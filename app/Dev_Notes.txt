@@ -44,3 +44,4 @@ Schedule
 	5. Further function of backend: APIs (/api/message/send and /api/phone/call done in 2023-12-03, tested in 2023-12-04)
 	6. WebServer UI Design prototype. (Call And Send Page in 2023-12-08)
 	7. Debugging...Futher plans...
+	8. Add plugin: Bank

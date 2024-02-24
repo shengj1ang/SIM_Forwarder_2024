@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <title>Latest Messages</title>
+</head>
+<body>
+
+
+<div class="container mt-5">
+    <h1 class="mb-4">Latest Messages</h1>
+
+    <table class="table">
+        <thead>
+            <tr>
+				<th scope="col">Timestamp</th>
+                <th scope="col">From</th>
+				<th scope="col">To</th>
+                <th scope="col">Content</th>
+                
+            </tr>
+        </thead>
+        <tbody>
+            {% for message in messages %}
+                <tr>
+                    <td>{{message[0]}} </td>
+                    <td>{{ message[1] }}</td>
+                    <td>{{ message[2] }}</td>
+					<td>{{ message[3] }}</td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    {% if messages|length == 0 %}
+        <p class="text-danger">No More Records.</p>
+    {% endif %}
+
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

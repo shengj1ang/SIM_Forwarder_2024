@@ -1,0 +1,72 @@
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <title>MyPhone</title>
+    <style>
+        body {
+            padding-top: 60px; /* 适配Bootstrap固定顶部导航栏 */
+        }
+
+        #myIframe {
+            width: 100%;
+            height: 650px; /* 设置 iframe 高度，根据需求调整 */
+        }
+    </style>
+</head>
+<body>
+
+<nav class="navbar navbar-expand-lg navbar-light bg-light fixed-top">
+    <div class="container">
+        <a class="navbar-brand" href="#">MyPhone</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav">
+                <li class="nav-item">
+                    <button class="nav-link btn btn-link" onclick="loadContent('/ui/messages')">Messages</button>
+                </li>
+                <li class="nav-item">
+                    <button class="nav-link btn btn-link" onclick="loadContent('/ui/calls')">Calls</button>
+                </li>
+                <li class="nav-item">
+                    <button class="nav-link btn btn-link" onclick="loadContent('/ui/send')">Send</button>
+                </li>
+                <li class="nav-item">
+                    <button class="nav-link btn btn-link" onclick="loadContent('/ui/call')">Call</button>
+                </li>
+                <li class="nav-item">
+                    <button class="nav-link btn btn-link" onclick="loadContent('/bank/chart/2023')">Chart 2023</button>
+                </li>
+                <li class="nav-item">
+                    <button class="nav-link btn btn-link" onclick="loadContent('/bank/chart/2024')">Chart 2024</button>
+                </li>
+                <li class="nav-item">
+                    <button class="nav-link btn btn-link" onclick="loadContent('/bank/chart/2025')">Chart 2025</button>
+                </li>
+				
+				<li class="nav-item">
+                    <button class="nav-link btn btn-link" onclick="loadContent('/share/baidu?key=f1b1b08a')">Baidu</button>
+                </li>
+				
+				<li class="nav-item">
+                    <button class="nav-link btn btn-link" onclick="loadContent('/get_url')">Get_URL</button>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<iframe id="myIframe" src="/ui/messages" frameborder="0"></iframe>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+    function loadContent(url) {
+        document.getElementById('myIframe').src = url;
+		        document.querySelector('.navbar-collapse').classList.remove('show');
+
+    }
+</script>
+</body>
+</html>

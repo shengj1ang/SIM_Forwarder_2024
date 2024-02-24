@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Transaction Chart</title>
+    <!-- Include Chart.js library -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Include Bootstrap CSS and JS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+</head>
+<body>
+    <canvas id="myChart" width="400" height="200"></canvas>
+
+    <!-- Bootstrap modal for detailed results -->
+    <div class="modal" id="detailsModal">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+
+                <!-- Modal Header -->
+                <div class="modal-header">
+                    <h4 class="modal-title">Detailed Results for month <span id="selectedMonth"></span></h4>
+                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                </div>
+
+                <!-- Modal Body -->
+                <div class="modal-body" id="detailsBody">
+                    <!-- Detailed results will be displayed here as a table -->
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Merchant</th>
+                                <th>Amount</th>
+                                <th>Unit</th>
+                                <th>Timestamp</th>
+                            </tr>
+                        </thead>
+                        <tbody id="detailsTableBody">
+                            <!-- Detailed results will be dynamically added here -->
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Modal Footer -->
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                </div>
+
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // Get the data from the Flask route
+        var data = {{ data|safe }};
+        var labels = {{ labels|safe }};
+        
+        // Prepare the data for Chart.js
+        var ctx = document.getElementById('myChart').getContext('2d');
+        var myChart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: 'Monthly Sum',
+                    data: data,
+                    backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                    borderColor: 'rgba(75, 192, 192, 1)',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                scales: {
+                    x: {
+                        type: 'category', 
+                        title: {
+                            display: true,
+                            text: 'Month'
+                        }
+                    },
+                    y: {
+                        beginAtZero: true,
+                        title: {
+                            display: true,
+                            text: '{{final_unit}}'
+                        }
+                    }
+                },
+                plugins: {
+                    legend: {
+                        onClick: null // Disable legend click event
+                    }
+                },
+                events: ['click'], // Enable click events
+                onClick: function(event, elements) {
+                    if (elements.length > 0) {
+                        var monthIndex = elements[0].index;
+                        var selectedMonth = labels[monthIndex];
+                        
+                        // Make API request for detailed results
+                        fetch(`/bank/list/{{year}}/${selectedMonth}`)
+                            .then(response => response.json())
+                            .then(data => {
+                                // Display detailed results as a table in Bootstrap modal
+                                $('#selectedMonth').text(selectedMonth);
+                                var tableBody = $('#detailsTableBody');
+                                tableBody.empty(); // Clear previous content
+
+                                data.forEach(item => {
+                                    var timestamp = new Date(parseFloat(item.ts) * 1000);
+                                    var row = `<tr>
+                                        <td>${item.merchant}</td>
+                                        <td>${item.amount}</td>
+                                        <td>${item.unit}</td>
+                                        <td>${timestamp.toLocaleString()}</td>
+                                    </tr>`;
+                                    tableBody.append(row);
+                                });
+
+                                $('#detailsModal').modal('show');
+                            })
+                            .catch(error => console.error('Error fetching data:', error));
+                    }
+                }
+            }
+        });
+    </script>
+</body>
+</html>

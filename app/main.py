@@ -9,7 +9,8 @@ from functions.unicode import *
 from functions.phoneinfo import *
 from functions.database import db
 from functions.standardtime import standard_time
-
+from plugin_bank import app_bank
+from plugin_webUI import app_webUI
 #内置常量
 __version__="PROTOTYPE-2023-12-06-EDITION7"
 en_uni=(" ","!","\"","#","$","%","&","'","(",")","*","+",",","-",".","/","0","1","2","3","4","5","6","7","8","9",":",";","<","=",">","?","@","A","B","C","D","E","F","G","H","I","J","K","L","M","N","O","P","Q","R","S","T","U","V","W","X","Y","Z","[","\\","]","^","_","`","a","b","c","d","e","f","g","h","i","j","k","l","m","n","o","p","q","r","s","t","u","v","w","x","y","z","{","|","}","~")
@@ -18,6 +19,8 @@ msg_in_receiving=False #短信是否完全接收完毕
 msg_in_sending=False #短信是否在发送
 app = Flask(__name__)
 flask_command=[""]
+app.register_blueprint(app_bank, url_prefix='/')
+app.register_blueprint(app_webUI, url_prefix='/')
 
 def isnum(str):
     try:
@@ -36,7 +39,7 @@ def trim_spaces_in_bytes(input_bytes):
     # Split the bytes into lines, trim each line, and then join them back into a single bytes object
     #return b'\n'.join(line.strip()+bytes(f"/*{random.randint(100000000,999999999)}*/","utf-8") for line in input_bytes.splitlines())
     return b'\n'.join(line.strip() for line in input_bytes.splitlines())
-
+'''
 @app.after_request
 def remove_newlines(response):
     if response.content_type == 'text/html; charset=utf-8':
@@ -45,11 +48,26 @@ def remove_newlines(response):
     else:
         return response
         
-        
+'''
+      
 @app.route('/')
 def page_index():
     return "index"
-        
+    
+@app.route('/ui/send')
+@app.route('/ui/send_message')
+@app.route('/ui/send-message')
+def ui_send_message():
+    global MyConfig
+    return render_template('send_message.html', fm=MyConfig["phonenum"])
+
+@app.route('/ui/call')
+@app.route('/ui/phone_call')
+def ui_phone_call():
+    global MyConfig
+    return render_template('phone_call.html', fm=MyConfig["phonenum"])
+
+    
 @app.route('/api/message/send', methods=['POST'])
 def api_message_send():
     global flask_command
@@ -91,18 +109,7 @@ def api_phone_call():
     flask_command=["CALL",to]
     return jsonify({"result":"suc", "detail": f"Command MAKE A CALL from {fm} to {to} has been delivered"})
 
-@app.route('/ui/send')
-@app.route('/ui/send_message')
-@app.route('/ui/send-message')
-def ui_send_message():
-    global MyConfig
-    return render_template('send_message.html', fm=MyConfig["phonenum"])
 
-@app.route('/ui/call')
-@app.route('/ui/phone_call')
-def ui_phone_call():
-    global MyConfig
-    return render_template('phone_call.html', fm=MyConfig["phonenum"])
     
 def at_initialize():
     global ser
