@@ -5,5 +5,10 @@ bats/*
 !bats/SIM_FORWARDER-Example-python.cmd
 app/config/*
 !app/config/default.ini
+app/database/backup
 app/database/mydatabase.db
 app/database/import-data-from-old-version/data.old.7z
+app/database/import-data-from-apple-devices/chat.db
+app/database/import-data-from-apple-devices/db/*.db
+app/database/import-data-from-android-devices/import-aiob-to-database-private.py
+app/database/import-data-from-android-devices/aiob/*.aiob

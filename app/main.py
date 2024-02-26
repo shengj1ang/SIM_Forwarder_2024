@@ -289,10 +289,10 @@ def loop():
                      db.message(fm=msg_phonenum, to=MyConfig["phonenum"], content=msg_content)
                      if phone_location[0]=="Error":
                          db.log("LOG",f"【收到消息】来自：{msg_phonenum} {phonenum_self('space')}时间：{standard_time.get()} 内容：{msg_content}")
-                         tg_send(f"【收到消息】\n来自：{msg_phonenum} \n{phonenum_self('enter')}时间：{standard_time.get()} \n内容：{msg_content}")
+                         tg_send(f"【收到消息】\n来自：{msg_phonenum} \n{phonenum_self('enter')}内容：{msg_content}")
                      else:
                          db.log("LOG",f"来自：{msg_phonenum} ({phone_location[1]}) {phonenum_self('space')}时间：{standard_time.get()} 内容：{msg_content}")
-                         tg_send(f"【收到消息】\n来自：{msg_phonenum} ({phone_location[1]}) \n{phonenum_self('enter')}时间：{standard_time.get()} \n内容：{msg_content}")
+                         tg_send(f"【收到消息】\n来自：{msg_phonenum} ({phone_location[1]}) \n{phonenum_self('enter')}内容：{msg_content}")
                      msg="" #删除内存中所有短消息
                      ser.write('AT+CMGD=1,2'.encode('utf-8') + b'\r\n')
                  # 拒绝所有电话

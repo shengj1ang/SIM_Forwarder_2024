@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+    <title>Add Message</title>
+</head>
+<body>
+
+<div class="container mt-4">
+    <h2>Add Message</h2>
+    <form id="addMessageForm">
+        <div class="form-group">
+            <label for="timestamp">Timestamp:</label>
+            <input type="datetime-local" class="form-control" name="timestamp" required>
+        </div>
+        <div class="form-group">
+            <label for="sender">From:</label>
+            <input type="text" class="form-control" name="sender" required>
+        </div>
+        <div class="form-group">
+            <label for="receiver">To:</label>
+            <input type="text" class="form-control" name="receiver" required>
+        </div>
+        <div class="form-group">
+            <label for="content">Content:</label>
+            <input type="text" class="form-control" name="content" required>
+        </div>
+        <button type="button" class="btn btn-primary" id="submitBtn">Submit</button>
+
+        <!-- 新增的按钮 -->
+        <button type="button" class="btn btn-warning ml-2" id="rebuildButton">Rebuild Database</button>
+    </form>
+</div>
+
+<script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+
+<script>
+    document.getElementById('rebuildButton').addEventListener('click', function() {
+        if (confirm('Are you sure you want to rebuild the database?')) {
+            // 发送请求到后端
+            fetch('/ui/messages/rebuild_database', { method: 'POST' })
+                .then(response => response.json())
+                .then(data => {
+                    if (data.success) {
+                        alert('Database rebuilt successfully');
+                    } else {
+                        alert('Error: ' + data.message);
+                    }
+                })
+                .catch(error => console.error('Error:', error));
+        }
+    });
+
+    document.getElementById('submitBtn').addEventListener('click', function() {
+        // 获取表单数据
+        var formData = new FormData(document.getElementById('addMessageForm'));
+
+        // 发送异步请求到后端
+        fetch('/ui/messages/add', { 
+            method: 'POST',
+            body: formData
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                alert('Message added successfully');
+                // 清空表单
+                //document.getElementById('addMessageForm').reset();
+            } else {
+                alert('Error: ' + data.message);
+            }
+        })
+        .catch(error => console.error('Error:', error));
+    });
+</script>
+
+</body>
+</html>

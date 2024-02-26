@@ -1,0 +1,5 @@
+sqlite语句在messages表中如果timestamp最后以000结尾去除这个000
+
+UPDATE messages
+SET timestamp = substr(timestamp, 1, length(timestamp) - 3)
+WHERE timestamp LIKE '%000';
