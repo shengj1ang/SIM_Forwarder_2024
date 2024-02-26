@@ -9,8 +9,9 @@ from functions.unicode import *
 from functions.phoneinfo import *
 from functions.database import db
 from functions.standardtime import standard_time
-from plugin_bank import app_bank
-from plugin_webUI import app_webUI
+
+
+
 #内置常量
 __version__="PROTOTYPE-2023-12-06-EDITION7"
 en_uni=(" ","!","\"","#","$","%","&","'","(",")","*","+",",","-",".","/","0","1","2","3","4","5","6","7","8","9",":",";","<","=",">","?","@","A","B","C","D","E","F","G","H","I","J","K","L","M","N","O","P","Q","R","S","T","U","V","W","X","Y","Z","[","\\","]","^","_","`","a","b","c","d","e","f","g","h","i","j","k","l","m","n","o","p","q","r","s","t","u","v","w","x","y","z","{","|","}","~")
@@ -19,8 +20,16 @@ msg_in_receiving=False #短信是否完全接收完毕
 msg_in_sending=False #短信是否在发送
 app = Flask(__name__)
 flask_command=[""]
+
+# Web Plugins
+from plugin_bank import app_bank
 app.register_blueprint(app_bank, url_prefix='/')
+from plugin_webUI import app_webUI
 app.register_blueprint(app_webUI, url_prefix='/')
+from plugin_statistics import app_statistics
+app.register_blueprint(app_statistics, url_prefix='/')
+from plugin_share import app_share
+app.register_blueprint(app_share, url_prefix='/')
 
 def isnum(str):
     try:

@@ -44,5 +44,6 @@ Schedule
 	5. Further function of backend: APIs (/api/message/send and /api/phone/call done in 2023-12-03, tested in 2023-12-04)
 	6. WebServer UI Design prototype. (Call And Send Page in 2023-12-08)
 	7. Debugging...Futher plans...
-	8. Add plugin: Bank, WebUI. Remove time in telegram messages
-	9. Add Python scripts: Import Messages from Apple or Android Devices to the database.
+	8. Add plugin: Bank, WebUI. Remove time in telegram messages. (Done in 2024-02-25)
+	9. Add Python scripts: Import Messages from Apple or Android Devices to the database. (Done in 2024-02-25)
+	10. Add plugin: share. Add configs in share folder. Requests /share?app=<filename>&key=<key>  (Done in 2024-02-26)

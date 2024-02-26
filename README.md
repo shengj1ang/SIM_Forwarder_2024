@@ -35,14 +35,7 @@ API Desgin(Method: POST): Form Not in URL but like this Return json:
 ```
 If the value of "from" in the posted form is "TEST", API will return test message.
 
-Schedule 
-1. Rewrite Config file formats. (Done in 2023-12-03) 
-2. Add all old logs&messages&calls to database (Done in 2023-12-03)
-3. backend(main.py) prototype: database features. (Done in 2023-12-03)
-4. Remove import Phone, make it as local function. (Done in 2023-12-03) 
-5. Further function of backend: APIs (/api/message/send and /api/phone/call done in 2023-12-03, tested in 2023-12-04) 
-6. WebServer UI Design prototype. (Call And Send Page in 2023-12-08)
-7. Debugging...Futher plans...
+Dev Details: Read app/Dev_Notes.txt
 
 <h2>Hardware: SIM80OC</h2>
 <img src="https://raw.githubusercontent.com/shengj1ang/SIM_Forwarder_2024/main/img/0.png"></img><p>USB转GSM模块 四频GSM/GPRS SIM80OC</p>
@@ -55,6 +48,7 @@ Schedule
 <img src="https://raw.githubusercontent.com/shengj1ang/SIM_Forwarder_2024/main/img/webUI/webUI_chart.png"></img><p>Plugin: Bank chart (Read bank messages from database)</p>
 <img src="https://raw.githubusercontent.com/shengj1ang/SIM_Forwarder_2024/main/img/webUI/webUI_baidu.png"></img><p>Share: Share to others. 共享网盘登录的动态验证码</p>
 <img src="https://raw.githubusercontent.com/shengj1ang/SIM_Forwarder_2024/main/img/webUI/webUI_addMessage.png"></img><p>Add messages to database manually. 手动添加消息到数据库</p>
+<img src="https://raw.githubusercontent.com/shengj1ang/SIM_Forwarder_2024/main/img/webUI/webUI_statistics.png"></img><p>Statistics</p>
 
 <h2>Backend</h2>
 <img src="https://raw.githubusercontent.com/shengj1ang/SIM_Forwarder_2024/main/img/1.png"></img><p>Console控制台</p>

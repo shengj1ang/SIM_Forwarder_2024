@@ -1,9 +1,12 @@
 import sqlite3, re, json
 from flask import Flask, render_template, request, jsonify, Blueprint
 from datetime import datetime, timedelta
+DATABASE = 'database/mydatabase.db'
 
-
-app_bank=Blueprint('app_bank', __name__)
+if __name__ == '__main__':
+    app_bank = Flask(__name__)
+else:
+    app_bank=Blueprint('app_bank', __name__)
 
 def timestamp_to_datetime(timestamp):
     try:
@@ -40,7 +43,7 @@ def get_timestamp_range(year, month):
 
 class Bank():
     def __init__(self):
-        self.DB="database/mydatabase.db"
+        self.DB=DATABASE
     def parseCreditCardTransactions(self, content, ts=""):
         try:
             card_number=content[content.find("信用卡")+3:content.find("于")]
@@ -246,5 +249,4 @@ def web_sum(year, month):
         return jsonify({"status": False, "detail": "Invalid month value. Please provide a valid integer for month."})
 
 if __name__ == '__main__':
-    app_bank = Flask(__name__)
     app_bank.run(debug=True, port=12300)

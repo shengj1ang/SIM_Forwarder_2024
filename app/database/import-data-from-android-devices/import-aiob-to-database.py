@@ -6,6 +6,7 @@
 
 # Change This !!!
 receiver="008613688888888"
+file_path="aiob/SMS-1708912680479.aiob"
 
 
 
@@ -93,7 +94,6 @@ def parse_aiob_file(file_content):
             
 # 用法示例
 #file_path = 'path/to/your/file.aiob'
-file_path="aiob/SMS-1708912680479.aiob"
 file_content = read_binary_file(file_path)
 
 if file_content:
