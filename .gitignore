@@ -1,4 +1,5 @@
 .DS_Store
+app/build
 venv
 bats/*
 !bats/SIM_FORWARDER-Example.cmd
