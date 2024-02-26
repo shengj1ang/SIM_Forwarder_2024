@@ -1,4 +1,4 @@
-# SIM_Forwarder_2024
+﻿# SIM_Forwarder_2024
 
 **Base on SIM800_AT_Python**
 
@@ -44,10 +44,23 @@ Schedule
 6. WebServer UI Design prototype. (Call And Send Page in 2023-12-08)
 7. Debugging...Futher plans...
 
-
+<h2>Hardware: SIM80OC</h2>
 <img src="https://raw.githubusercontent.com/shengj1ang/SIM_Forwarder_2024/main/img/0.png"></img><p>USB转GSM模块 四频GSM/GPRS SIM80OC</p>
+
+<h2>webUI Demo (API also provided)</h2>
+<img src="https://raw.githubusercontent.com/shengj1ang/SIM_Forwarder_2024/main/img/webUI/webUI_messages.png"></img><p>Messages</p>
+<img src="https://raw.githubusercontent.com/shengj1ang/SIM_Forwarder_2024/main/img/webUI/webUI_Sendmessage.png"></img><p>Send a message</p>
+<img src="https://raw.githubusercontent.com/shengj1ang/SIM_Forwarder_2024/main/img/webUI/webUI_calls.png"></img><p>Call</p>
+<img src="https://raw.githubusercontent.com/shengj1ang/SIM_Forwarder_2024/main/img/webUI/webUI_call.png"></img><p>Make a call </p>
+<img src="https://raw.githubusercontent.com/shengj1ang/SIM_Forwarder_2024/main/img/webUI/webUI_chart.png"></img><p>Plugin: Bank chart (Read bank messages from database)</p>
+<img src="https://raw.githubusercontent.com/shengj1ang/SIM_Forwarder_2024/main/img/webUI/webUI_baidu.png"></img><p>Share: Share to others. 共享网盘登录的动态验证码</p>
+<img src="https://raw.githubusercontent.com/shengj1ang/SIM_Forwarder_2024/main/img/webUI/webUI_addMessage.png"></img><p>Add messages to database manually. 手动添加消息到数据库</p>
+
+<h2>Backend</h2>
 <img src="https://raw.githubusercontent.com/shengj1ang/SIM_Forwarder_2024/main/img/1.png"></img><p>Console控制台</p>
 <img src="https://raw.githubusercontent.com/shengj1ang/SIM_Forwarder_2024/main/img/2.png"></img><p>Database</p>
 <img src="https://raw.githubusercontent.com/shengj1ang/SIM_Forwarder_2024/main/img/3.png"></img><p>Database</p>
 <img src="https://raw.githubusercontent.com/shengj1ang/SIM_Forwarder_2024/main/img/4.png"></img><p>Database</p>
+
+<h2>Telegram Push</h2>
 <img src="https://raw.githubusercontent.com/shengj1ang/SIM_Forwarder_2024/main/img/5.png"></img><p>Telegram</p>
