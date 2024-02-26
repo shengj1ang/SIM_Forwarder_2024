@@ -102,7 +102,7 @@ def message_parser(array):
         time=time_parser(time)
         res.append([time,tp,fr,to,content])
     return res
-        
+  
 def time_parser(string):
     # Possible Formats: 2022-11-10,17:37:12 (UTC+00:00) 
     #                   2023-05-07,04:37:07 (UTC+01:00 British Summer Time) 
@@ -111,6 +111,9 @@ def time_parser(string):
     try:
         BritishSummerTime=False
         # Unix Timestamp
+        if "/" in string:
+            string=string.replace("/","-")
+            string="20"+string
         if string.replace('.', '', 1).isdigit():
             return float(string)
         if "(" in string and ")" in string:
@@ -131,7 +134,6 @@ def time_parser(string):
     except Exception as e:
         print(f"解析时间时出错: {e}, {string}")
         return 0
-
 
 
 '''

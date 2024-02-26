@@ -46,7 +46,7 @@ def get_all_messages():
         conn = sqlite3.connect(DATABASE)
         cursor = conn.cursor()
 
-        # 查询最新的100条记录
+        # 查询所有的记录
         cursor.execute('SELECT * FROM messages ORDER BY ROWID DESC;')
         messages = cursor.fetchall()
 
