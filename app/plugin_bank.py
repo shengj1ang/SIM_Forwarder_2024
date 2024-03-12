@@ -108,13 +108,18 @@ class Bank():
 @app_bank.route('/bank/chart/<year>')
 def web_bank_chart(year):
     try:
+        #year=request.args.get('year')
         final_unit = request.args.get('unit')
+        
         if final_unit:
             final_unit=final_unit.upper()
         #return f"Received month value: {month}"
         labels = []
         data=[]
-        year=int(year)
+        if year:
+            year=int(year)
+        else:
+            return jsonify({"status":False, "detail":"Year not given"})
         if 2000<=year<=9999:
             transactions=Bank().readBankMessagesFromDB()
             for m in range(1,13):

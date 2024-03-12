@@ -14,6 +14,16 @@
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
 </head>
 <body>
+
+<div class="container mt-5">
+  <div class="row">
+    <div class="col-md-6">
+      <label for="yearPicker">选择年份：</label>
+      <select class="form-control" id="yearPicker"></select>
+    </div>
+  </div>
+</div>
+
     <canvas id="myChart" width="400" height="200"></canvas>
 
     <!-- Bootstrap modal for detailed results -->
@@ -53,12 +63,50 @@
             </div>
         </div>
     </div>
-    
+  <script>
+  // 获取当前年份
+  //const currentYear = new Date().getFullYear();
+	const currentYear = {{year}};
+  // 设置起始年份和结束年份
+  const startYear = currentYear - 10;
+  const endYear = currentYear + 10;
+
+  // 获取年份选择框元素
+  const yearPicker = document.getElementById('yearPicker');
+
+  // 动态生成年份选项
+  for (let year = endYear; year >= startYear; year--) {
+    const option = document.createElement('option');
+    option.value = year;
+    option.text = year;
+
+    // 设置默认选中当前年份
+    if (year === currentYear) {
+      option.selected = true;
+    }
+
+    yearPicker.appendChild(option);
+  }
+
+  // 监听年份选择框的change事件
+  yearPicker.addEventListener('change', function() {
+    // 获取选中的年份
+    const selectedYear = yearPicker.value;
+
+    // 构建对应的URL
+    const url = `/bank/chart/${selectedYear}`;
+
+    // 页面跳转
+    window.location.href = url;
+  });
+</script>
+  
     <script>
         // Get the data from the Flask route
         var data = {{ data|safe }};
         var labels = {{ labels|safe }};
         
+
         // Prepare the data for Chart.js
         var ctx = document.getElementById('myChart').getContext('2d');
         var myChart = new Chart(ctx, {

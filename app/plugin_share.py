@@ -33,10 +33,12 @@ def read_share_configs(folder_path="share"):
                 file_content_res=[]
                 for i in file_content:
                     i=i.replace(" ","").replace("\n","")
+                    comment=""
                     if i!="":
                         if "#" in i:
+                            comment=i[i.find("#")+1:]
                             i=i[:i.find("#")]
-                        file_content_res.append(i)
+                        file_content_res.append([i, comment])
                 file_data.append([[file_name_no_extension], file_content_res])
 
     return file_data
@@ -78,22 +80,23 @@ def get_latest_messages(keyword):
 
 share_configs=read_share_configs()
 
-@app_share.route('/share')
-def ui_share():
-    app = request.args.get('app')
-    key = request.args.get('key')
+@app_share.route('/share/<app>/<key>')
+def ui_share(app, key):
+    #app = request.args.get('app')
+    #key = request.args.get('key')
     if not app or not key:
-        return jsonify({"status":False, "detail":"In this share mode,app and key should be provided. Like /share?app=<app>&key=abcdefg"})
+        return jsonify({"status":False, "detail":"In this share mode,app and key should be provided. Like /share/<app>/<key>"})
     if live_update_configs:
         share_configs=read_share_configs()
     for i in share_configs:
         if app==i[0][0]:
-            if key in i[1] and key!=i[1][0]:
-                #print(i[1][0])
-                messages = get_latest_messages(keyword=i[1][0])
-                return render_template('messages.html', messages=messages)
-            else:
-                return jsonify({"status":False, "detail":f"Invalid key for app {app}. Contact with administrator or try again later."})
+            #print(i)
+            for j in i[1]:
+                if key==j[0] and key!=i[1][0][0]:
+                    #print(i[1][0])
+                    messages = get_latest_messages(keyword=i[1][0][0])
+                    return render_template('messages.html', messages=messages)
+            return jsonify({"status":False, "detail":f"Invalid key for app {app}. Contact with administrator or try again later."})
         else:
             #print(app,i[0])
             pass
@@ -103,6 +106,7 @@ def ui_share():
     
 @app_share.route('/get_url')
 def get_url():
-    return render_template('get_url.html', share_configs=str(share_configs))
-
+    if live_update_configs:
+        share_configs=read_share_configs()
+    return render_template('get_url.html', share_configs=share_configs)
 

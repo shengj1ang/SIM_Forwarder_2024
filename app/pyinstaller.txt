@@ -1,4 +1,5 @@
+
 https://stackoverflow.com/questions/69776492/indexerror-tuple-index-out-of-range-when-i-try-to-create-an-executable-from-a-p
 
-pyinstaller --onefile main.py
+pyinstaller --icon=Ampeross-Qetto-2-Sim-card.ico --add-data=templates;templates --add-data=static;static --clean --onefile main.py
 

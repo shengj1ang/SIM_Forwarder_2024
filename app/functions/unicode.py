@@ -1,3 +1,36 @@
+def trim_spaces_in_bytes(input_bytes):
+    """
+    Trims spaces from the beginning and end of each line in the given bytes object.
+
+    :param input_bytes: A bytes object potentially with spaces at the start and end of its lines.
+    :return: A new bytes object with spaces removed from the start and end of each line.
+    """
+    # Split the bytes into lines, trim each line, and then join them back into a single bytes object
+    #return b'\n'.join(line.strip()+bytes(f"/*{random.randint(100000000,999999999)}*/","utf-8") for line in input_bytes.splitlines())
+    return b'\n'.join(line.strip() for line in input_bytes.splitlines())
+
+def isnum(str):
+    try:
+        float(str)
+        return True
+    except Exception as e:
+        return False
+
+def inEnglish(text):
+    en_uni=(
+            "0","1","2","3","4","5","6","7","8","9",       
+            "A","B","C","D","E","F","G","H","I","J","K","L","M","N","O","P","Q","R","S","T","U","V","W","X","Y","Z",
+            "a","b","c","d","e","f","g","h","i","j","k","l","m","n","o","p","q","r","s","t","u","v","w","x","y","z",
+            " ","!","\"","#","$","%","&","'","(",")","*","+",",","-",".","/",
+            ":",";","<","=",">","?","@","[","\\","]","^","_","`","{","|","}","~"
+            )
+    for i in text or "\n"in text:
+        if i in en_uni:
+            pass
+        else:
+            return False
+    return True
+
 def DecodeUnicode(str):
     i=0
     res=""

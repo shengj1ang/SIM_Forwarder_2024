@@ -2,26 +2,16 @@
 import sys, time, re, threading, traceback
 from flask import Flask, request, render_template, send_from_directory, redirect, jsonify
 import serial
-#import idna
 from functions.config import UserConfig
 from functions.telegram import tg_bot
 from functions.unicode import *
 from functions.phoneinfo import *
 from functions.database import db
 from functions.standardtime import standard_time
-
-
-
-#内置常量
-__version__="PROTOTYPE-2023-12-06-EDITION7"
-en_uni=(" ","!","\"","#","$","%","&","'","(",")","*","+",",","-",".","/","0","1","2","3","4","5","6","7","8","9",":",";","<","=",">","?","@","A","B","C","D","E","F","G","H","I","J","K","L","M","N","O","P","Q","R","S","T","U","V","W","X","Y","Z","[","\\","]","^","_","`","a","b","c","d","e","f","g","h","i","j","k","l","m","n","o","p","q","r","s","t","u","v","w","x","y","z","{","|","}","~")
-record_sms_phonenum=[] #存储已发送提示消息的手机号，避免重复发送，浪费话费。
-msg_in_receiving=False #短信是否完全接收完毕
-msg_in_sending=False #短信是否在发送
+from functions.at import *
+# Web Plugins
 app = Flask(__name__)
 flask_command=[""]
-
-# Web Plugins
 from plugin_bank import app_bank
 app.register_blueprint(app_bank, url_prefix='/')
 from plugin_webUI import app_webUI
@@ -31,23 +21,10 @@ app.register_blueprint(app_statistics, url_prefix='/')
 from plugin_share import app_share
 app.register_blueprint(app_share, url_prefix='/')
 
-def isnum(str):
-    try:
-        float(str)
-        return True
-    except Exception as e:
-        return False
+__version__="202403??"
+record_sms_phonenum=[] #存储已发送提示消息的手机号，避免重复发送，浪费话费。
 
-def trim_spaces_in_bytes(input_bytes):
-    """
-    Trims spaces from the beginning and end of each line in the given bytes object.
 
-    :param input_bytes: A bytes object potentially with spaces at the start and end of its lines.
-    :return: A new bytes object with spaces removed from the start and end of each line.
-    """
-    # Split the bytes into lines, trim each line, and then join them back into a single bytes object
-    #return b'\n'.join(line.strip()+bytes(f"/*{random.randint(100000000,999999999)}*/","utf-8") for line in input_bytes.splitlines())
-    return b'\n'.join(line.strip() for line in input_bytes.splitlines())
 '''
 @app.after_request
 def remove_newlines(response):
@@ -118,96 +95,23 @@ def api_phone_call():
     flask_command=["CALL",to]
     return jsonify({"result":"suc", "detail": f"Command MAKE A CALL from {fm} to {to} has been delivered"})
 
-
-    
-def at_initialize():
-    global ser
-    db.log("LOG","AT_initializing...")
-    ser.write('AT'.encode('utf-8') + b'\r\n');time.sleep(1);db.log("TERMINAL",str(ser.readline())) #No Response without this
-    ser.write('ATE0'.encode('utf-8') + b'\r\n');time.sleep(1);db.log("TERMINAL",str(ser.readline()))  #echo off
-    ser.write('AT+CPIN?'.encode('utf-8') + b'\r\n') #SIM Card In?
-    ser.write('AT+CLIP=1'.encode('utf-8') + b'\r\n');time.sleep(1);db.log("TERMINAL",str(ser.readline())) #显示来电号码，如果没有这条指令，则来电话模块只送出ring，不送出号码
-    ser.write('AT+CMGF=1'.encode('utf-8') + b'\r\n')
-    #ser.write('AT+CIMI'.encode('utf-8') + b'\r\n');time.sleep(1);db.log("TERMINAL",str(ser.readline())) #读取IMSI
-    #ser.write('AT+CCID'.encode('utf-8') + b'\r\n');time.sleep(1);db.log("TERMINAL",str(ser.readline())) #读取ICCID号
-    #ser.write('AT+CPBS="ON"'.encode('utf-8') + b'\r\n');time.sleep(1);db.log("TERMINAL",str(ser.readline())) #将电话存贮位置选择为本机号码列表
-    #ser.write('AT+CPBW=1'.encode('utf-8') + b'\r\n');time.sleep(1);db.log("TERMINAL",str(ser.readline())) #储存本机号码
-    #ser.write('AT+CNUM'.encode('utf-8') + b'\r\n');time.sleep(1);db.log("TERMINAL",str(ser.readline())) #读取本机号码
-    #ser.write('AT+CSQ'.encode('utf-8') + b'\r\n');time.sleep(1);db.log("TERMINAL",str(ser.readline())) #检查网络信号强度和SIM卡情况命令返回：+CSQ: **,##
-          #其中**应在10到31之间，数值越大表明信号质量越好，##应为99。
-          #否则应检查天线或SIM卡是否正确安装
-    #ser.write('AT+CGMR'.encode('utf-8') + b'\r\n');time.sleep(1);db.log("TERMINAL",str(ser.readline())) #查询模块版本
-    #ser.write('AT+COPS=?'.encode('utf-8') + b'\r\n');time.sleep(1);db.log("TERMINAL",str(ser.readline())) #搜网
-    
-    return True
-
-def at_send_en_message(phonenum,text):
-    global ser
-    global msg_in_sending
+@app.route('/api/telegram/<command>')
+def api_telegram_command(command):
     global MyConfig
-    try:
-        if MyConfig["sms_send_allow"]==True:
-            if msg_in_sending==False:
-                for i in text or "\n"in text:
-                    if i in en_uni:
-                        pass
-                    else:
-                        return((False,"NOT_EN"))
-                msg_in_sending=True
-                ser.write('AT+CMGF=1'.encode('utf-8') + b'\r\n')
-                ser.write('AT+CMGS="{}"'.format(phonenum).encode('utf-8') + b'\r\n')
-                ser.write(b'\r\n')
-                time.sleep(0.1)
-                ser.write(text.encode('utf-8') + b'\r\n')
-                time.sleep(0.2)
-                command_variable = chr(26)
-                ser.write(command_variable.encode('utf-8'))
-                msg_in_sending=False
-                db.message(fm=MyConfig["phonenum"], to=phonenum, content=text)
-                db.log("SEND-EN",f"MESSAGE SENT TO {phonenum} FROM {MyCofnig['phonenum']}, Content:{text}")
-                tg_send(f"【发送消息】从{MyCofnig['phonenum']} 到 {phonenum}, 内容:{text}")
-                return((True,""))
-            else:
-                 return((False,"目前有消息在发送中"))
-        else:
-            return((False,"sms_send_allow=False，全局消息发生被禁用！"))
-    except Exception as e:
-        return(False,str(e))   
-        
-def at_send_cn_message(phonenum,text):
-    global ser
-    global msg_in_sending
-    global MyConfig
-    try:
-        if MyConfig["sms_send_allow"]==True:
-            if msg_in_sending==False:
-                msg_in_sending=True
-                ser.write('AT+CMGF=1'.encode('utf-8') + b'\r\n')
-                time.sleep(0.1)
-                ser.write('AT+CSCS="UCS2"'.encode('utf-8') + b'\r\n')
-                time.sleep(0.1)
-                ser.write('AT+CSMP=17,71,0,8'.encode('utf-8') + b'\r\n')
-                time.sleep(0.1)
-                ser.write('AT+CMGS="{}"'.format(EncodeUnicode(phonenum)).encode('utf-8') + b'\r\n')
-                time.sleep(0.1)
-                ser.write(EncodeUnicode(text).encode('utf-8') + b'\r\n')
-                time.sleep(0.2)
-                command_variable = chr(26)
-                ser.write(command_variable.encode('utf-8'))
-                msg_in_sending=False
-                db.message(fm=MyConfig["phonenum"], to=phonenum, content=text)
-                db.log("SEND-CN",f"MESSAGE SENT TO {phonenum} FROM {MyCofnig['phonenum']}, Content:{text}")
-                tg_send(f"【发送消息】从{MyCofnig['phonenum']} 到 {phonenum}, 内容:{text}")
-                return((True,""))
-            else:
-                 return((False,"目前有消息在发送中"))  
-        else:
-            return((False,"sms_send_allow=False，全局消息发生被禁用！"))
-    except Exception as e:
-        return(False,str(e))
+    if command=="status" or command=="show":
+        return jsonify({"result":"suc", "status": MyConfig["enable_telegram"]})
+    elif command=="enable":
+        MyConfig["enable_telegram"]=True
+        return jsonify({"result":"suc", "status": MyConfig["enable_telegram"]})
+    elif command=="disable":
+        MyConfig["enable_telegram"]=False
+        return jsonify({"result":"suc", "status": MyConfig["enable_telegram"]})
+    else:
+        return jsonify({"result":"fail", "detail": f"Invalid command: {command}"})
 
 
 def check_sms_limit(phonenum):
+    global record_sms_phonenum
     if sms_limit==0:
         return((False,"Up To Limit"))
     else:
@@ -223,7 +127,7 @@ def check_sms_limit(phonenum):
         else:
             return((False,"Phonenum Length Not 11"))
 
-def phonenum_self(mode): #mode支持参数：enter输出末尾换行符，space末尾为空格。
+def phonenum_self(mode="enter"): #mode支持参数：enter输出末尾换行符，space末尾为空格。
     if MyConfig["phonenum"]=="" or MyConfig["current_phonenum_tg"]==False:
         return("")
     if mode=="enter":
@@ -233,19 +137,10 @@ def phonenum_self(mode): #mode支持参数：enter输出末尾换行符，space�
     else:
          return("")
 
-def call(num):
-    global ser
-    ser.write('atd{};'.format(str(num)).encode('utf-8') + b'\r\n')
-    
 
-def call10086():
-    global ser
-    db.log("CALL","Start To Call 10086")
-    ser.write('atd10086;'.encode('utf-8') + b'\r\n')
 
 def tg_send(msg):
-    global MyConfig
-    global tg
+    global MyConfig, tg
     if MyConfig["enable_telegram"]==False:
         db.log("LOG_TG","'enable_telegram' is set to False, so Telegram Bot will not start")
     else:
@@ -256,12 +151,12 @@ def is_running_in_cmd():
    
     
 def loop():
-    global ser, msg_in_receiving, msg_in_sending, record_sms_phonenum, tg, flask_command, MyConfig
+    global ser, record_sms_phonenum, tg, flask_command, MyConfig
     error_count=1 #初始错误次数值
-    standard_time.get()
+    msg_in_receiving=False #短信是否完全接收完毕
     db.log("LOG","Program Starts")
     db.log("LOG","参数设置：串口=%s ，波特率=%d"%(MyConfig["serialPort"],MyConfig["baudRate"])) #输出串口号和波特率
-    at_initialize()
+    at_initialize(ser=ser, db=db)
     while True:
         try:
             schedule_reconnect=time.time()
@@ -273,7 +168,6 @@ def loop():
                     ser.close()
                     time.sleep(3)
                     ser=serial.Serial(MyConfig["serialPort"],MyConfig["baudRate"],timeout=0.5) 
-                    #at_initialize()
                     db.log("LOG","检测到信号断连，重新连接串口完成")
                  if b'+CMTI:' in res:
                      db.log("LOG","有短信来了")
@@ -328,7 +222,10 @@ def loop():
                         return_check_limit=check_sms_limit(send_msg_phonenum)
                         db.log("LOG",f"临时发短信次数记录：{str(record_sms_phonenum)}")
                         if return_check_limit[0]==True:
-                            return_send_cn_message=at_send_cn_message(send_msg_phonenum,sms_auto_send_content)
+                            db.message(fm=MyConfig["phonenum"], to=send_msg_phonenum, content=sms_auto_send_content)
+                            db.log("SEND-CN",f"MESSAGE SENT TO {send_msg_phonenum} FROM {MyConfig['phonenum']}, Content:{sms_auto_send_content}")
+                            tg_send(f"【发送消息】从{MyConfig['phonenum']} 到 {send_msg_phonenum}, 内容:{sms_auto_send_content}")
+                            return_send_cn_message=at_send_cn_message(ser=ser, MyConfig=MyConfig,target_number=send_msg_phonenum, text_content=sms_auto_send_content)
                             if return_send_cn_message[0]==True:
                                 db.log("LOG",f"发送自动回复短信， 号码：{send_msg_phonenum}")
                                 db.message(fm=MyConfig["phonenum"], to=send_msg_phonenum, content=MyConfig["sms_auto_send_content"])
@@ -349,17 +246,17 @@ def loop():
             #Flask Command
             if flask_command[0]!="":
                 if flask_command[0]=="SEND":
+                    db.message(fm=MyConfig["phonenum"], to=flask_command[2], content=flask_command[3])
+                    db.log("SEND-EN",f"MESSAGE SENT TO {flask_command[2]} FROM {MyConfig['phonenum']}, Content:{flask_command[3]}")
+                    tg_send(f"【发送消息】从{MyConfig['phonenum']} 到 {flask_command[2]}, 内容:{flask_command[3]}")
                     if flask_command[1]=="cn":
-                        at_send_cn_message(flask_command[2],flask_command[3])
+                        at_send_cn_message(ser=ser, MyConfig=MyConfig,target_number=flask_command[2], text_content=flask_command[3])
                     elif flask_command[1]=="en":
-                        at_send_en_message(flask_command[2],flask_command[3])
+                        at_send_en_message(ser=ser, MyConfig=MyConfig,target_number=flask_command[2], text_content=flask_command[3])
                     else:
                         pass
                 elif flask_command[0]=="CALL":
-                    if flask_command[1]=="10086":
-                        call10086()
-                    else:
-                        call(flask_command[1])
+                    call(ser, flask_command[1])
                 else:
                     pass
                 flask_command[0]=""

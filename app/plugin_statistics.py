@@ -27,42 +27,34 @@ def get_top_ten_data(mode):
 
     return top_ten_data
 
-@app_statistics.route('/ui/statistics/sender')
-def web_statistics_sender():
-    return render_template('statistics.html', mode="sender")
+@app_statistics.route('/ui/statistics/<mode>')
+def web_statistics(mode):
+    if mode=="sender" or mode=="receiver":
+        return render_template('statistics.html', mode=mode)
+    else:
+        return jsonify({"status":False,"detail":f"No such mode: {mode}, /ui/statistics/sender or /ui/statistics/receiver"})
+    
 
-@app_statistics.route('/ui/statistics/receiver')
-def web_statistics_receiver():
-    return render_template('statistics.html', mode="receiver")
+
+@app_statistics.route('/statistics/messages/<mode>')
+def api_statistics_messages(mode):
+    if mode=="sender" or mode=="receiver":     
+        top_ten_data = get_top_ten_data(mode=mode)
+
+        labels = [data[0] for data in top_ten_data]
+        counts = [data[1] for data in top_ten_data]
+
+        data = {
+            'labels': labels,
+            'counts': counts
+        }
+
+        return jsonify(data)
+    else:
+        return jsonify({"status":False,"detail":f"No such mode: {mode}, /ui/statistics/sender or /ui/statistics/receiver"})
+    
 
 
-@app_statistics.route('/statistics/messages/sender')
-def api_statistics_messages_sender():
-    top_ten_data = get_top_ten_data(mode="sender")
-
-    labels = [data[0] for data in top_ten_data]
-    counts = [data[1] for data in top_ten_data]
-
-    data = {
-        'labels': labels,
-        'counts': counts
-    }
-
-    return jsonify(data)
-
-@app_statistics.route('/statistics/messages/receiver')
-def api_statistics_messages_receiver():
-    top_ten_data = get_top_ten_data(mode="receiver")
-
-    labels = [data[0] for data in top_ten_data]
-    counts = [data[1] for data in top_ten_data]
-
-    data = {
-        'labels': labels,
-        'counts': counts
-    }
-
-    return jsonify(data)
 
 if __name__ == '__main__':
     app_statistics.run(debug=True, port=12300)

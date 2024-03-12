@@ -47,3 +47,5 @@ Schedule
 	8. Add plugin: Bank, WebUI. Remove time in telegram messages. (Done in 2024-02-25)
 	9. Add Python scripts: Import Messages from Apple or Android Devices to the database. (Done in 2024-02-25)
 	10. Add plugin: share. Add configs in share folder. Requests /share?app=<filename>&key=<key>  (Done in 2024-02-26)
+	11. Edit plugin: share. Show comment in share page. (Done in 2024-03-12)
+	12. Add web page and API to enable and disable telegram message in a session. (Done in 2024-03-12)
