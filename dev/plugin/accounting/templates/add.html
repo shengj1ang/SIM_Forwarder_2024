@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Expense Tracker</title>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
+<body>
+
+<div class="container mt-5">
+    <h2>Expense Tracker</h2>
+    <form method="POST" action="/api/log.php">
+        <div class="form-group">
+            <label>时间：</label><br>
+            <div class="form-check form-check-inline">
+                <input class="form-check-input" type="radio" name="Time" id="currentTime" value="currentTime" checked>
+                <label class="form-check-label" for="currentTime">使用当前时间</label>
+            </div>
+            <div class="form-check form-check-inline">
+                <input class="form-check-input" type="radio" name="Time" id="customTime" value="customTime">
+                <label class="form-check-label" for="customTime">自定义</label>
+                <input type="text" class="form-control" name="customTime" placeholder="自定义时间" value="timestamp" style="display: none;">
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label>Money In/Out：</label><br>
+            <div class="form-check form-check-inline">
+                <input class="form-check-input" type="radio" name="moneyInOut" id="moneyIn" value="moneyIn">
+                <label class="form-check-label" for="moneyIn">Money In</label>
+            </div>
+            <div class="form-check form-check-inline">
+                <input class="form-check-input" type="radio" name="moneyInOut" id="moneyOut" value="moneyOut" checked>
+                <label class="form-check-label" for="moneyOut">Money Out</label>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label>支付渠道：</label><br>
+            <div class="form-check form-check-inline">
+                <input class="form-check-input" type="radio" name="paymentMethod" id="wechat" value="wechat">
+                <label class="form-check-label" for="wechat">WeChat</label>
+            </div>
+            <div class="form-check form-check-inline">
+                <input class="form-check-input" type="radio" name="paymentMethod" id="alipay" value="alipay">
+                <label class="form-check-label" for="alipay">Alipay</label>
+            </div>
+            <div class="form-check form-check-inline">
+                <input class="form-check-input" type="radio" name="paymentMethod" id="BOC" value="BOC" checked>
+                <label class="form-check-label" for="BOC">BOC</label>
+            </div>
+            <div class="form-check form-check-inline">
+                <input class="form-check-input" type="radio" name="paymentMethod" id="LLOYDS" value="LLOYDS">
+                <label class="form-check-label" for="LLOYDS">LLOYDS Bank</label>
+            </div>
+            <div class="form-check form-check-inline">
+                <input class="form-check-input" type="radio" name="paymentMethod" id="Monzo" value="Monzo">
+                <label class="form-check-label" for="Monzo">Monzo</label>
+            </div>
+            <div class="form-check form-check-inline">
+                <input class="form-check-input" type="radio" name="paymentMethod" id="Starling" value="Starling">
+                <label class="form-check-label" for="Starling">Starling</label>
+            </div>
+            <div class="form-check form-check-inline">
+                <input class="form-check-input" type="radio" name="paymentMethod" id="customPayment" value="customPayment">
+                <label class="form-check-label" for="customPayment">自定义</label>
+                <input type="text" class="form-control" name="customPaymentMethod" placeholder="自定义支付方式" style="display: none;">
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label>消费类别：</label><br>
+            <div class="form-check form-check-inline">
+                <input class="form-check-input" type="radio" name="paymentCategory" id="Clothing" value="Clothing">
+                <label class="form-check-label" for="Clothing">Clothing</label>
+            </div>
+            <div class="form-check form-check-inline">
+                <input class="form-check-input" type="radio" name="paymentCategory" id="Food" value="Food">
+                <label class="form-check-label" for="Food">Food</label>
+            </div>
+            <div class="form-check form-check-inline">
+                <input class="form-check-input" type="radio" name="paymentCategory" id="Housing" value="Housing">
+                <label class="form-check-label" for="Housing">Housing</label>
+            </div>
+            <div class="form-check form-check-inline">
+                <input class="form-check-input" type="radio" name="paymentCategory" id="Transportation" value="Transportation">
+                <label class="form-check-label" for="Transportation">Transportation</label>
+            </div>
+            <div class="form-check form-check-inline">
+                <input class="form-check-input" type="radio" name="paymentCategory" id="Education" value="Education">
+                <label class="form-check-label" for="Education">Education</label>
+            </div>
+            <div class="form-check form-check-inline">
+                <input class="form-check-input" type="radio" name="paymentCategory" id="Entertainment" value="Entertainment">
+                <label class="form-check-label" for="Entertainment">Entertainment</label>
+            </div>
+            <div class="form-check form-check-inline">
+                <input class="form-check-input" type="radio" name="paymentCategory" id="Project" value="Project">
+                <label class="form-check-label" for="Project">Project</label>
+            </div>
+            <div class="form-check form-check-inline">
+                <input class="form-check-input" type="radio" name="customPaymentCategory" id="customPaymentCategory" value="custompaymentCategory">
+                <label class="form-check-label" for="customPaymentCategory">自定义</label>
+                <input type="text" class="form-control" name="custompaymentCategory" placeholder="自定义支付方式" style="display: none;">
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label for="amount">金额：</label>
+            <input type="number" class="form-control" id="amount" name="amount" step="0.01" required>
+        </div>
+
+        <div class="form-group">
+            <label>备注：</label><br>
+            <div class="form-check form-check-inline">
+                <input class="form-check-input" type="radio" name="option" id="noOption" value="noOption" checked>
+                <label class="form-check-label" for="noOption">无</label>
+            </div>
+            <div class="form-check form-check-inline">
+                <input class="form-check-input" type="radio" name="option" id="customOption" value="customOption">
+                <label class="form-check-label" for="customOption">自定义</label>
+                <input type="text" class="form-control" name="customOption" placeholder="自定义选项" style="display: none;">
+            </div>
+        </div>
+
+        <button type="submit" class="btn btn-primary">提交</button>
+    </form>
+</div>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+<script>
+    // JavaScript代码可以用于显示/隐藏自定义输入框
+    $(document).ready(function() {
+        $('input[name="Time"]').change(function() {
+            if ($('#customTime').is(':checked')) {
+                $('input[name="customTime"]').show();
+            } else {
+                $('input[name="customTime"]').hide();
+            }
+        });
+        $('input[name="paymentMethod"]').change(function() {
+            if ($('#customPayment').is(':checked')) {
+                $('input[name="customPaymentMethod"]').show();
+            } else {
+                $('input[name="customPaymentMethod"]').hide();
+            }
+        });
+        $('input[name="custompaymentCategory"]').change(function() {
+            if ($('#custompayment').is(':checked')) {
+                $('input[name="custompaymentCategory"]').show();
+            } else {
+                $('input[name="custompaymentCategory"]').hide();
+            }
+        });
+
+
+        $('input[name="option"]').change(function() {
+            if ($('#customOption').is(':checked')) {
+                $('input[name="customOption"]').show();
+            } else {
+                $('input[name="customOption"]').hide();
+            }
+        });
+    });
+</script>
+
+</body>
+</html>
+
