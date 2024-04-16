@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Message Statistics</title>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="/static/chart.js/chart.js"></script>
 </head>
 <body>
     <h1>Message Statistics: {{mode}}</h1>
@@ -16,11 +16,9 @@
     </div>
 
     <script>
-        // 使用Fetch API获取数据
         fetch('/statistics/messages/{{mode}}')
             .then(response => response.json())
             .then(data => {
-                // 创建柱状图
                 var barChartCanvas = document.getElementById('barChart').getContext('2d');
                 new Chart(barChartCanvas, {
                     type: 'bar',
@@ -43,7 +41,6 @@
                     }
                 });
 
-                // 创建饼图
                 var pieChartCanvas = document.getElementById('pieChart').getContext('2d');
                 new Chart(pieChartCanvas, {
                     type: 'pie',

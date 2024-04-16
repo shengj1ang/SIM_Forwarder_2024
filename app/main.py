@@ -21,20 +21,21 @@ app.register_blueprint(app_statistics, url_prefix='/')
 from plugin_share import app_share
 app.register_blueprint(app_share, url_prefix='/')
 
-__version__="202403??"
+__version__="20240416"
+__webDescription__="webDescription"
 record_sms_phonenum=[] #存储已发送提示消息的手机号，避免重复发送，浪费话费。
 
 
-'''
+
 @app.after_request
 def remove_newlines(response):
     if response.content_type == 'text/html; charset=utf-8':
+        #response.set_data(f'<!--{__webDescription__}--><!--Backend Version: {__version__}-->'.encode('utf-8')+trim_spaces_in_bytes(response.get_data()).replace(b'\n', b'').replace(b'\t', b''))
         response.set_data(trim_spaces_in_bytes(response.get_data()).replace(b'\n', b'').replace(b'\t', b''))
         return response
     else:
         return response
         
-'''
       
 @app.route('/')
 def page_index():

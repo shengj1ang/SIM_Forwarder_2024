@@ -49,6 +49,8 @@ class Bank():
             card_number=content[content.find("信用卡")+3:content.find("于")]
             if "交易失败" in content or "预授权" in content :
                 merchant="";amount=""
+            elif "网银" in content:
+                merchant="";amount=""
             elif "消费" in content:
                 merchant=content[content.find("在")+1:content.find("消费")]
                 amount=content[content.find("消费")+2:content.find("元")]

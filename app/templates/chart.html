@@ -6,12 +6,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Transaction Chart</title>
     <!-- Include Chart.js library -->
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="/static/chart.js/chart.js"></script>
     <!-- Include Bootstrap CSS and JS -->
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <link rel="stylesheet" href="/static/bootstrap/css/bootstrap.min.css">
+    <script src="/static/jquery/3.5.1/jquery.min.js"></script>
+    <script src="/static/popper.js/1.16.0/popper.min.js"></script>
+	<script src="/static/bootstrap/js/bootstrap.min.js"></script>
 </head>
 <body>
 
@@ -64,118 +64,95 @@
         </div>
     </div>
   <script>
-  // 获取当前年份
-  //const currentYear = new Date().getFullYear();
-	const currentYear = {{year}};
-  // 设置起始年份和结束年份
+  /*const currentYear = new Date().getFullYear();*/
+  const currentYear = {{year}};
   const startYear = currentYear - 10;
   const endYear = currentYear + 10;
-
-  // 获取年份选择框元素
   const yearPicker = document.getElementById('yearPicker');
-
-  // 动态生成年份选项
   for (let year = endYear; year >= startYear; year--) {
     const option = document.createElement('option');
     option.value = year;
     option.text = year;
-
-    // 设置默认选中当前年份
     if (year === currentYear) {
       option.selected = true;
     }
-
     yearPicker.appendChild(option);
   }
-
-  // 监听年份选择框的change事件
   yearPicker.addEventListener('change', function() {
-    // 获取选中的年份
     const selectedYear = yearPicker.value;
-
-    // 构建对应的URL
     const url = `/bank/chart/${selectedYear}`;
-
-    // 页面跳转
     window.location.href = url;
   });
 </script>
-  
-    <script>
-        // Get the data from the Flask route
-        var data = {{ data|safe }};
-        var labels = {{ labels|safe }};
-        
+<script>
+	var data = {{ data|safe }};
+	var labels = {{ labels|safe }};
+	var ctx = document.getElementById('myChart').getContext('2d');
+	var myChart = new Chart(ctx, {
+		type: 'bar',
+		data: {
+			labels: labels,
+			datasets: [{
+				label: 'Monthly Sum',
+				data: data,
+				backgroundColor: 'rgba(75, 192, 192, 0.2)',
+				borderColor: 'rgba(75, 192, 192, 1)',
+				borderWidth: 1
+			}]
+		},
+		options: {
+			scales: {
+				x: {
+					type: 'category', 
+					title: {
+						display: true,
+						text: 'Month'
+					}
+				},
+				y: {
+					beginAtZero: true,
+					title: {
+						display: true,
+						text: '{{final_unit}}'
+					}
+				}
+			},
+			plugins: {
+				legend: {
+					onClick: null
+				}
+			},
+			events: ['click'],
+			onClick: function(event, elements) {
+				if (elements.length > 0) {
+					var monthIndex = elements[0].index;
+					var selectedMonth = labels[monthIndex];
+					
+					fetch(`/bank/list/{{year}}/${selectedMonth}`)
+						.then(response => response.json())
+						.then(data => {
+							$('#selectedMonth').text(selectedMonth);
+							var tableBody = $('#detailsTableBody');
+							tableBody.empty();
 
-        // Prepare the data for Chart.js
-        var ctx = document.getElementById('myChart').getContext('2d');
-        var myChart = new Chart(ctx, {
-            type: 'bar',
-            data: {
-                labels: labels,
-                datasets: [{
-                    label: 'Monthly Sum',
-                    data: data,
-                    backgroundColor: 'rgba(75, 192, 192, 0.2)',
-                    borderColor: 'rgba(75, 192, 192, 1)',
-                    borderWidth: 1
-                }]
-            },
-            options: {
-                scales: {
-                    x: {
-                        type: 'category', 
-                        title: {
-                            display: true,
-                            text: 'Month'
-                        }
-                    },
-                    y: {
-                        beginAtZero: true,
-                        title: {
-                            display: true,
-                            text: '{{final_unit}}'
-                        }
-                    }
-                },
-                plugins: {
-                    legend: {
-                        onClick: null // Disable legend click event
-                    }
-                },
-                events: ['click'], // Enable click events
-                onClick: function(event, elements) {
-                    if (elements.length > 0) {
-                        var monthIndex = elements[0].index;
-                        var selectedMonth = labels[monthIndex];
-                        
-                        // Make API request for detailed results
-                        fetch(`/bank/list/{{year}}/${selectedMonth}`)
-                            .then(response => response.json())
-                            .then(data => {
-                                // Display detailed results as a table in Bootstrap modal
-                                $('#selectedMonth').text(selectedMonth);
-                                var tableBody = $('#detailsTableBody');
-                                tableBody.empty(); // Clear previous content
+							data.forEach(item => {
+								var timestamp = new Date(parseFloat(item.ts) * 1000);
+								var row = `<tr>
+									<td>${item.merchant}</td>
+									<td>${item.amount}</td>
+									<td>${item.unit}</td>
+									<td>${timestamp.toLocaleString()}</td>
+								</tr>`;
+								tableBody.append(row);
+							});
 
-                                data.forEach(item => {
-                                    var timestamp = new Date(parseFloat(item.ts) * 1000);
-                                    var row = `<tr>
-                                        <td>${item.merchant}</td>
-                                        <td>${item.amount}</td>
-                                        <td>${item.unit}</td>
-                                        <td>${timestamp.toLocaleString()}</td>
-                                    </tr>`;
-                                    tableBody.append(row);
-                                });
-
-                                $('#detailsModal').modal('show');
-                            })
-                            .catch(error => console.error('Error fetching data:', error));
-                    }
-                }
-            }
-        });
-    </script>
+							$('#detailsModal').modal('show');
+						})
+						.catch(error => console.error('Error fetching data:', error));
+				}
+			}
+		}
+	});
+</script>
 </body>
 </html>

@@ -1,16 +1,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/static/bootstrap/css/bootstrap.min.css">
     <title>Guests</title>
     <style>
         body {
-            padding-top: 60px; /* 适配Bootstrap固定顶部导航栏 */
+            padding-top: 60px;
         }
 
         #myIframe {
             width: 100%;
-            height: 650px; /* 设置 iframe 高度，根据需求调整 */
+            height: 650px;
         }
     </style>
 </head>
@@ -72,7 +72,7 @@
 
 <iframe id="myIframe" src="/ui/messages" frameborder="0"></iframe>
 
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script src="/static/bootstrap/js/bootstrap.bundle.min.js"></script>
 <script>
     function loadContent(url) {
         document.getElementById('myIframe').src = url;
