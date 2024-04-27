@@ -21,7 +21,7 @@ How to Use:
 
 import sys
 
-def isnum(str):
+def isNum(str):
     try:
         float(str)
         return(True)
@@ -55,7 +55,7 @@ def ConfigParser(array):
             part2=True
         elif part2.upper()=="FALSE":
             part2=False
-        elif isnum(part2)==True:
+        elif isNum(part2)==True:
             if "." in part2:
                 part2=float(part2)
             else:

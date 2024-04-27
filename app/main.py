@@ -10,36 +10,29 @@ from functions.database import db
 from functions.standardtime import standard_time
 from functions.at import *
 # Web Plugins
-app = Flask(__name__)
-flask_command=[""]
-from plugin_bank import app_bank
-app.register_blueprint(app_bank, url_prefix='/')
-from plugin_webUI import app_webUI
-app.register_blueprint(app_webUI, url_prefix='/')
-from plugin_statistics import app_statistics
-app.register_blueprint(app_statistics, url_prefix='/')
-from plugin_share import app_share
-app.register_blueprint(app_share, url_prefix='/')
+app = Flask(__name__); flask_command=[""]
+from plugin_bank import app_bank; app.register_blueprint(app_bank, url_prefix='/')
+from plugin_webUI import app_webUI; app.register_blueprint(app_webUI, url_prefix='/')
+from plugin_statistics import app_statistics; app.register_blueprint(app_statistics, url_prefix='/')
+from plugin_share import app_share; app.register_blueprint(app_share, url_prefix='/')
 
-__version__="20240416"
+__version__="20240418"
 __webDescription__="webDescription"
 record_sms_phonenum=[] #存储已发送提示消息的手机号，避免重复发送，浪费话费。
-
-
 
 @app.after_request
 def remove_newlines(response):
     if response.content_type == 'text/html; charset=utf-8':
-        #response.set_data(f'<!--{__webDescription__}--><!--Backend Version: {__version__}-->'.encode('utf-8')+trim_spaces_in_bytes(response.get_data()).replace(b'\n', b'').replace(b'\t', b''))
-        response.set_data(trim_spaces_in_bytes(response.get_data()).replace(b'\n', b'').replace(b'\t', b''))
+        #html_content=f'<!--{__webDescription__}--><!--Backend Version: {__version__}-->'.encode('utf-8')+trim_spaces_in_bytes(response.get_data()).replace(b'\n', b'').replace(b'\t', b'')
+        html_content=trim_spaces_in_bytes(response.get_data()).replace(b'\n', b'').replace(b'\t', b'')
+        response.set_data(html_content)
         return response
     else:
         return response
-        
-      
+
 @app.route('/')
 def page_index():
-    return "index"
+    return f"Hello: {__webDescription__}"
     
 @app.route('/ui/send')
 @app.route('/ui/send_message')
@@ -71,7 +64,7 @@ def api_message_send():
         return jsonify({"result":"fail", "detail": f"Invalid Mode, Allowed Mode: cn, en. The mode you posted: {mode}"})
     if fm!=MyConfig["phonenum"]:
         return jsonify({"result":"fail", "detail": f"This requests api is not for phonenumber {fm}."})
-    if isnum(to)==False:
+    if isNum(to)==False:
         return jsonify({"result":"fail", "detail": "Invalid Target Phone Number."})
     if content.replace(" ","")=="":
         return jsonify({"result":"fail", "detail": "Empty Message is not acceptable. "})
@@ -91,7 +84,7 @@ def api_phone_call():
         return jsonify({"result":"suc", "detail": "API Works"})
     if fm!=MyConfig["phonenum"]:
         return jsonify({"result":"fail", "detail": f"This requests api is not for phonenumber {fm}"})
-    if isnum(to)==False:
+    if isNum(to)==False:
         return jsonify({"result":"fail", "detail": "Invalid Target Phone Number"})
     flask_command=["CALL",to]
     return jsonify({"result":"suc", "detail": f"Command MAKE A CALL from {fm} to {to} has been delivered"})
@@ -107,6 +100,14 @@ def api_telegram_command(command):
     elif command=="disable":
         MyConfig["enable_telegram"]=False
         return jsonify({"result":"suc", "status": MyConfig["enable_telegram"]})
+    elif command=="enable_verification_code":
+        MyConfig["enable_verification_code"]=True
+        return jsonify({"result":"suc", "status": MyConfig["enable_verification_code"]})
+    elif command=="disable_verification_code":
+        MyConfig["enable_verification_code"]=False
+        return jsonify({"result":"suc", "status": MyConfig["enable_verification_code"]})
+    elif command=="verification_code":
+        return jsonify({"result":"suc", "status": MyConfig["enable_verification_code"]})
     else:
         return jsonify({"result":"fail", "detail": f"Invalid command: {command}"})
 
@@ -140,12 +141,20 @@ def phonenum_self(mode="enter"): #mode支持参数：enter输出末尾换行符�
 
 
 
-def tg_send(msg):
+def tg_send(msg, delay="", queue=False):
     global MyConfig, tg
     if MyConfig["enable_telegram"]==False:
         db.log("LOG_TG","'enable_telegram' is set to False, so Telegram Bot will not start")
     else:
-        tg.sendMessage(chat_id=MyConfig["tg_chat_id"], text=str(msg))
+        if queue==True:
+            tg.sendMessageQueue(chat_id=MyConfig["tg_chat_id"], text=str(msg))
+            return True
+        if delay=="":
+            tg.sendMessage(chat_id=MyConfig["tg_chat_id"], text=str(msg))
+            return True
+        else:
+            tg.sendMessageDelay(chat_id=MyConfig["tg_chat_id"], text=str(msg), delay=delay)
+            return True
 
 def is_running_in_cmd():
     return 'PROMPT' in os.environ or 'PYCHARM_HOSTED' in os.environ 
@@ -177,10 +186,14 @@ def loop():
                      #开始读取短信
                      re_phonenum=re.compile(r'\d{5,}')
                      re_time=re.compile(r'\d{1,2}/\d{1,2}/\d{1,2},\d{1,2}:\d{1,2}:\d{1,2}')
-                     if len(re_phonenum.search(str(res))[0])>24:
-                         msg_phonenum=DecodeUnicode(re_phonenum.search(str(res))[0])
+                     msg_phonenum=re_phonenum.search(str(res))[0]
+                     '''
+                     if len(msg_phonenum)>24:
+                         msg_phonenum=DecodeUnicode(msg_phonenum)
                      else:
-                         msg_phonenum=re_phonenum.search(str(res))[0]
+                         msg_phonenum=msg_phonenum
+                     '''
+                     msg_phonenum=DecodeUnicodePhonenumber(msg_phonenum)
                      msg_time=re_time.search(str(res))[0]
                      msg_in_receiving=True
                      continue
@@ -188,15 +201,19 @@ def loop():
                      msg_content=DecodeUnicode(str(res)[2:-5])
                      msg_in_receiving=False
                      #读取短信完成
-                     #msg_phonenum=DecodeUnicode(msg_phonenum) #这里可能有gbk解码方面的问题，直接在第一步读取
+                     #msg_phonenum=DecodeUnicode(msg_phonenum) #这里可能有GBK解码方面的问题，直接在第一步读取
                      phone_location=phoneinfo(msg_phonenum)
                      db.message(fm=msg_phonenum, to=MyConfig["phonenum"], content=msg_content)
                      if phone_location[0]=="Error":
                          db.log("LOG",f"【收到消息】来自：{msg_phonenum} {phonenum_self('space')}时间：{standard_time.get()} 内容：{msg_content}")
-                         tg_send(f"【收到消息】\n来自：{msg_phonenum} \n{phonenum_self('enter')}内容：{msg_content}")
+                         tg_send(f"【收到消息】\n来自：{msg_phonenum} \n{phonenum_self('enter')}内容：{msg_content}", queue=True)
                      else:
                          db.log("LOG",f"来自：{msg_phonenum} ({phone_location[1]}) {phonenum_self('space')}时间：{standard_time.get()} 内容：{msg_content}")
-                         tg_send(f"【收到消息】\n来自：{msg_phonenum} ({phone_location[1]}) \n{phonenum_self('enter')}内容：{msg_content}")
+                         tg_send(f"【收到消息】\n来自：{msg_phonenum} ({phone_location[1]}) \n{phonenum_self('enter')}内容：{msg_content}", queue=True)
+                     verification_code=find_verification_code(msg_content)
+                     if verification_code["res"] and MyConfig["enable_verification_code"]:
+                        #tg_send(f"{verification_code['content']}\n来自：{msg_phonenum}\n说明：验证码识别模块，可在网页面版中临时关闭，或修改配置文件。", queue=True)
+                        tg_send(f"{verification_code['content']}", queue=True)
                      msg="" #删除内存中所有短消息
                      ser.write('AT+CMGD=1,2'.encode('utf-8') + b'\r\n')
                  # 拒绝所有电话
@@ -211,10 +228,10 @@ def loop():
                     db.call(fm=phonenum, to=MyConfig["phonenum"], result="REFUSED")
                     if phone_location[0]=="Error":
                          db.log("LOG",f"【拒绝来电】 \n来自：{phonenum} {phonenum_self('space')}")
-                         tg_send(f"【拒绝来电】 \n来自：{phonenum} {phonenum_self('space')}")
+                         tg_send(f"【拒绝来电】 \n来自：{phonenum} {phonenum_self('space')}", queue=True)
                     else:
                          db.log("LOG",f"【拒绝来电】 \n来自：{phonenum} ({phone_location[1]}) {phonenum_self('space')}")
-                         tg_send("LOG",f"【拒绝来电】 \n来自：{phonenum} ({phone_location[1]}) {phonenum_self('space')}")
+                         tg_send("LOG",f"【拒绝来电】 \n来自：{phonenum} ({phone_location[1]}) {phonenum_self('space')}", queue=True)
                  #向11位的手机号来电发送短信
                  if b'CLCC' in res:
                     re_phonenum=re.compile(r'\d{5,}')
@@ -297,7 +314,6 @@ if len(argv)<=1:
     flag_return=True
     sys.exit()
 
-
 if argv[1]=='debug-serial':
     from functions.debug import DebugSerial
     DebugSerial()
@@ -340,8 +356,7 @@ elif argv[1]=='run':
         loop()
 elif argv[1]=="help":
     if getattr(sys, 'frozen', False):
-        #Running as exe
-        help_main="main.exe"
+        help_main="main.exe"#Running as exe
     else:
         help_main="python main.py"
     print(f"""

@@ -1,6 +1,8 @@
 import sqlite3, re, json
 from flask import Flask, render_template, request, jsonify, Blueprint
 from datetime import datetime, timedelta
+from functions.standardtime import timestamp_to_datetime
+
 DATABASE = 'database/mydatabase.db'
 
 if __name__ == '__main__':
@@ -8,15 +10,7 @@ if __name__ == '__main__':
 else:
     app_bank=Blueprint('app_bank', __name__)
 
-def timestamp_to_datetime(timestamp):
-    try:
-        timestamp=float(timestamp)
-        # Using Python's datetime module to convert timestamp to a readable format
-        return datetime.utcfromtimestamp(timestamp).strftime('%Y-%m-%d %H:%M:%S')
-    except Exception as e:
-        print(f"Error converting timestamp to datetime: {e}")
-        return None
-        
+
 def get_timestamp_range(year, month):
     try:
         year = int(year)
@@ -35,10 +29,10 @@ def get_timestamp_range(year, month):
             end_timestamp = int(end_date.timestamp())
             return start_timestamp, end_timestamp
         else:
-            print("月份必须在1到12之间")
+            print("Error in plugin_bank.py=>get_timestamp_range, 月份必须在1到12之间")
             return False
     except ValueError as e:
-        print(f"无效的年份或月份输入: {e}")
+        print(f"Error in plugin_bank.py=>get_timestamp_range, 无效的年份或月份输入: {e}")
         return False
 
 class Bank():
@@ -101,7 +95,8 @@ class Bank():
                 if after_parse["status"]==True:
                     res.append(after_parse)
                 else:
-                    print(after_parse)
+                    #print(after_parse)
+                    pass
         finally:
             conn.close()
             return res

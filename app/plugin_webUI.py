@@ -1,5 +1,7 @@
 from flask import Flask, render_template, request, jsonify, Blueprint
 from datetime import datetime, timedelta
+from functions.standardtime import timestamp_to_datetime
+
 #from flask_wtf import FlaskForm
 #from wtforms import StringField, DateTimeField
 #from wtforms.validators import DataRequired
@@ -10,16 +12,6 @@ if __name__ == '__main__':
 else:
     app_webUI=Blueprint('app_webUI', __name__)
 
-
-
-def timestamp_to_datetime(timestamp):
-    try:
-        timestamp=float(timestamp)
-        # Using Python's datetime module to convert timestamp to a readable format
-        return str(datetime.utcfromtimestamp(timestamp).strftime('%Y-%m-%d %H:%M:%S'))
-    except Exception as e:
-        print(f"Error converting timestamp to datetime: {e}")
-        return None
 
 
 def get_latest_messages():

@@ -2,6 +2,7 @@ from flask import Flask, render_template, request, jsonify, Blueprint
 from datetime import datetime, timedelta
 import sqlite3
 import os
+from functions.standardtime import timestamp_to_datetime
 
 DATABASE = 'database/mydatabase.db'
 live_update_configs=True #update configs at each user request, you will not need to restart the program if you make changes but higher I/O usage.
@@ -17,7 +18,7 @@ def read_share_configs(folder_path="share"):
 
     # 检查文件夹是否存在
     if not os.path.exists(folder_path):
-        print(f"文件夹 '{folder_path}' 不存在")
+        print(f"Error in plugin_share.py=>read_share_configs: 文件夹 '{folder_path}' 不存在")
         return file_data
 
     # 遍历文件夹中的文件
@@ -44,15 +45,6 @@ def read_share_configs(folder_path="share"):
     return file_data
 
 
-def timestamp_to_datetime(timestamp):
-    try:
-        timestamp=float(timestamp)
-        # Using Python's datetime module to convert timestamp to a readable format
-        return str(datetime.utcfromtimestamp(timestamp).strftime('%Y-%m-%d %H:%M:%S'))
-    except Exception as e:
-        print(f"Error converting timestamp to datetime: {e}")
-        return None
-
 
 def get_latest_messages(keyword):
     try:
@@ -74,7 +66,7 @@ def get_latest_messages(keyword):
         return messages
     except Exception as e:
         # 处理异常情况，可以打印错误信息或者返回一个空列表
-        print(f"Error: {e}")
+        print(f"Error in plugin_share.py=>get_latest_messages: {e}")
         return []
 
 

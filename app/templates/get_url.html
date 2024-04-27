@@ -4,6 +4,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="/static/bootstrap/css/bootstrap.min.css">
     <title>GetURL</title>
+	<link rel="icon" href="/static/favicon.ico" sizes="23x23" type="image/x-icon">
 	<style>
   .dot {
     height: 8px;
@@ -22,7 +23,7 @@ try {
   const data = await response.json();
   if (data.result === 'suc') {
 	const statusMessage = data.status ? '启动' : '禁用';
-	alert(`Telegram状态为: ${statusMessage}`);
+	alert(`状态为: ${statusMessage}`);
   } else {
 	alert(`错误: ${data.detail}`);
   }
@@ -107,6 +108,9 @@ try {
 	  <li class="list-group-item"><span class="dot"></span><button class="btn btn-info" onclick="requestAPI('status')">Check Telegram Status</button>&nbsp;/api/telegram/status</li>
 <li class="list-group-item"><span class="dot"></span><button class="btn btn-success" onclick="requestAPI('enable')">Enable Telegram</button>&nbsp;/api/telegram/enable</li>
 <li class="list-group-item"><span class="dot"></span><button class="btn btn-danger" onclick="requestAPI('disable')">Disable Telegram</button>&nbsp;/api/telegram/disable</li>
+<li class="list-group-item"><span class="dot"></span><button class="btn btn-info" onclick="requestAPI('verification_code')">Check Telegram Verification Code Identify Status</button>&nbsp;/api/telegram/verification_code</li>
+<li class="list-group-item"><span class="dot"></span><button class="btn btn-success" onclick="requestAPI('enable_verification_code')">Enable Telegram Verification Code Identify Status</button>&nbsp;/api/telegram/enable_verification_code</li>
+<li class="list-group-item"><span class="dot"></span><button class="btn btn-danger" onclick="requestAPI('disable_verification_code')">Disable Telegram Verification Code Identify Status</button>&nbsp;/api/telegram/disable_verification_code</li>
 
 	  </ul>
     </div>

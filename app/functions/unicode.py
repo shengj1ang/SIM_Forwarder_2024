@@ -1,3 +1,5 @@
+import re
+
 def trim_spaces_in_bytes(input_bytes):
     """
     Trims spaces from the beginning and end of each line in the given bytes object.
@@ -9,7 +11,7 @@ def trim_spaces_in_bytes(input_bytes):
     #return b'\n'.join(line.strip()+bytes(f"/*{random.randint(100000000,999999999)}*/","utf-8") for line in input_bytes.splitlines())
     return b'\n'.join(line.strip() for line in input_bytes.splitlines())
 
-def isnum(str):
+def isNum(str):
     try:
         float(str)
         return True
@@ -31,30 +33,89 @@ def inEnglish(text):
             return False
     return True
 
-def DecodeUnicode(str):
+def DecodeUnicode(text=""):
     i=0
     res=""
-    if len(str)%4==0 and len(str)>6: #unicode需要可以被4整除
-        if str.upper()==str: #全是大写字母才算短信的unicode，而且不能是纯数字
-             while i<len(str)/4:
-                 res=res+"\\u"+str[4*i:4*i+4].lower()
-                 i+=1
-             try:    
-                 res=res.encode('utf-8').decode('unicode_escape')
-                 return(res)
-             except:
-                 return(str)
+    if len(text)%4==0 and len(text)>4: #unicode需要可以被4整除
+        if text.upper()==text: #全是大写字母才算短信的unicode，而且不能是纯数字
+            while i<len(text)/4:
+                res=res+"\\u"+text[4*i:4*i+4].lower()
+                i+=1
+            try:    
+                res=res.encode('utf-8').decode('unicode_escape')
+                return(res)
+            except Exception as e:
+                # print(f"An error in functions/unicode.py=>DecodeUnicode: {e}, input text: {text}") # Too much error may meet here.
+                return(text)
         else:
-             return(str)
+            print(f"An error in functions/unicode.py=>DecodeUnicode: The input text does not meet the requirement, text.upper()==text, input text: {text}")
+            return(text)
     else:
-        return(str)
+        print(f"An error in functions/unicode.py=>DecodeUnicode: The input text does not meet the requirement, len(text)%4==0 and len(text)>4, input text: {text}")
+        return(text)
+
+
+def DecodeUnicodePhonenumber(text=""):
+    i=0
+    res=""
+    if len(text)%4==0 and len(text)>4: #unicode需要可以被4整除
+        if text.upper()==text: #全是大写字母才算短信的unicode，而且不能是纯数字
+            while i<len(text)/4:
+                res=res+"\\u"+text[4*i:4*i+4].lower()
+                i+=1
+            try:    
+                res=res.encode('utf-8').decode('unicode_escape')
+                if isNum(res):
+                    return(res)
+                else:
+                    return text
+            except Exception as e:
+                #print(f"An error in functions/unicode.py=>DecodeUnicodePhonenumber: {e}, input text: {text}") # Too much error may meet here.
+                return(text)
+        else:
+            #print(f"An error in functions/unicode.py=>DecodeUnicodePhonenumber: The input text does not meet the requirement, text.upper()==text, input text: {text}")
+            return(text)
+    else:
+        #print(f"An error in functions/unicode.py=>DecodeUnicodePhonenumber: The input text does not meet the requirement, len(text)%4==0 and len(text)>4, input text: {text}")
+        return(text)
    
-def EncodeUnicode(text):
-     res=""
-     for i in text:
-          if str(i.encode("unicode_escape"))[2:-1]==i:
-               res=res+"00"+str(i.encode("unicode_escape").hex())
-          else:
-               res=res+str(i.encode("unicode_escape"))[5:-1]
-     res=res.upper()
-     return(res)
+
+def EncodeUnicode(text=""):
+    res=""
+    for i in text:
+        if str(i.encode("unicode_escape"))[2:-1]==i:
+            res=res+"00"+str(i.encode("unicode_escape").hex())
+        else:
+            res=res+str(i.encode("unicode_escape"))[5:-1]
+    res=res.upper()
+    return(res)
+
+def find_verification_code(text=""):
+    try:
+        lower_text = text.lower()
+        if 'verif' in lower_text or '验证' in lower_text:
+            text=text.replace("verify code","")
+            text=text.replace("verify","")
+            pattern = r'\d{4,6}'
+            # pattern = r'\b[a-zA-Z0-9]{4,6}\b'
+            # Looking for 4 to 6 digits
+            # pattern = r'\b\d{4,6}\b'
+            match = re.search(pattern, lower_text)
+            if match:
+                return {"res": True, "content": match.group()}
+            else:
+                return {"res": False, "content": ""}
+        else:
+            return {"res": False, "content": ""}
+    except Exception as e:
+        return {"res": False, "content": f"Exception Caught in find_verification_code: {e}"}
+
+'''
+from bs4 import BeautifulSoup
+import html       
+def html_escape(text):
+    """
+    Escapes all characters in the text to their corresponding HTML entities.
+    """
+    return ''.join(f'&#{ord(char)};' for char in text)
+'''
