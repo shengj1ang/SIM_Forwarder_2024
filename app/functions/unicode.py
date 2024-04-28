@@ -90,17 +90,23 @@ def EncodeUnicode(text=""):
     res=res.upper()
     return(res)
 
+def RemoveTextThatProducesUnexpectedConsequence(text=""):
+    text_list=("verify code","verify")
+    for i in text_list:
+        text=text.replace(i,"")
+    text=re.sub(r'【[^】]*】', '', text, count=1) # 移除第一个【】之间的文字，避免【4399】这种
+    return text
+
+
 def find_verification_code(text=""):
     try:
         lower_text = text.lower()
         if 'verif' in lower_text or '验证' in lower_text:
-            text=text.replace("verify code","")
-            text=text.replace("verify","")
             pattern = r'\d{4,6}'
             # pattern = r'\b[a-zA-Z0-9]{4,6}\b'
             # Looking for 4 to 6 digits
             # pattern = r'\b\d{4,6}\b'
-            match = re.search(pattern, lower_text)
+            match = re.search(pattern, RemoveTextThatProducesUnexpectedConsequence(lower_text))
             if match:
                 return {"res": True, "content": match.group()}
             else:
@@ -109,6 +115,7 @@ def find_verification_code(text=""):
             return {"res": False, "content": ""}
     except Exception as e:
         return {"res": False, "content": f"Exception Caught in find_verification_code: {e}"}
+
 
 '''
 from bs4 import BeautifulSoup
