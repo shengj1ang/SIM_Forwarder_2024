@@ -1,16 +1,119 @@
+DATABASE = 'database/mydatabase.db'
+merchant={
+"UNKOWN":"⚠未知的商家⚠️",
+"KFC":"快餐🍱", 
+"AZUMA":"快餐🍱", 
+"Burger":"快餐🍱", 
+"Go Loc":"商店🏬", 
+"Abdul":"商店🏬",
+"W M MO":"商店🏬Morrisons",
+"GYOZA":"中餐🥟",
+"PEACE":"中餐🥟和平花园",
+"Peace":"中餐🥟和平花园",
+"SumUP":"第三方支付",
+"SumUp":"第三方支付",
+"COSTCU":"商店🏬",
+"MAX SP":"照相📷",
+"TESCO":"商店🏬",
+"WAITRO":"商店🏬",
+"ASDA H":"商店🏬",
+"Lycamo":"运营商📱",
+"TRINIT":"健身房🏋️",
+"LONDON":"伦敦Oyster, 地下铁及公共交通",
+"TRAINP":"火车票/汽车票/飞机票",
+"GOOGLE":"Google线上扣款",
+"MCDONA":"快餐🍱",
+"WWW.BL":"Bloomberg",
+"Red Ch":"中餐🥟红辣椒🌶️",
+"BOLT.E":"打车🚖",
+"HUNGRY":"熊猫外卖🐼",
+"Jimmy?":"餐饮🦐",
+"SH UK":"餐饮🦐",
+"ARCHIE":"餐饮🦐",
+"BABYLO":"餐饮🦐",
+"Zettle":"第三方支付,餐饮零售",
+"Taste":"商店🏬恒昇行",
+"STGCOA":"公共交通🚌Stagecoach",
+"SQ *SN":"餐饮🦐",
+"Hungry":"熊猫外卖🐼",
+"Red Re":"中餐🥟",
+"Vue Ci":"🎬电影院🎦",
+"Google":"Google线上扣款",
+"WRIGHT":"餐饮🦐",
+"SWEET":"小店📦VictoriaCoachStation",
+"HUMAN":"共享自行车🚴",
+"PANOPO":"小店📦",
+"NYA*Sh":"小店📦",
+"MARKS*":"快餐🍱", 
+"Fetton":"餐饮🦐",
+"VISA A":"美国签证办理费用🇺🇸",
+"LYCAMO":"运营商📱",
+"THE MI":"小店📦",
+"SQ *DO":"餐饮🦐",
+"THE NA":"商店🏬",
+"MAMA T":"餐饮🦐",
+"AMZNMk":"亚马逊🛍️",
+"SQ *TA":"餐饮🦐",
+"NYA*Be":"小店📦或自动售货机",
+"AMAZON":"亚马逊🛍️",
+"AMZNMK":"亚马逊🛍️",
+"BERYL*":"共享自行车🚴",
+"BERYL":"共享自行车🚴",
+"UOM ST":"学费🏫",
+"MY MAN":"学费🏫",
+"UOM PR":"学费🏫",
+"UOM AC":"学费🏫",
+"RAILCA":"Rail Card",
+"SAFEST":"仓库safestore.co.uk",
+"CLOUDF":"Cloudflare边缘加速节点",
+"DVSA":"Driving Standards Agency",
+"HOLLAN":"保健品hollandandbarrett.com",
+"CHICKE":"快餐🍱",
+"NETIM":"域名注册商netim.com",
+"NAVARR":"餐饮🦐",
+"CONNEC":"可能是小店📦或自动售货机",
+"TEAM B":"可能是餐饮🦐",
+"NAVARR":"餐饮🦐",
+"SPAR P":"可能是小店📦或自动售货机",
+"WASABI":"餐饮🦐wasabi.uk.com",
+"ONE HO":"商店🏬",
+"MOSSBA":"可能是小店📦或自动售货机",
+"GRAND":"快餐🍱",
+"One Pl":"餐饮🦐",
+"GOVIN":"可能是小店📦或自动售货机",
+"RED CH":"中餐🥟红辣椒🌶️",
+"Dixy":"快餐🍱",
+"LIDL G":"商店🏬lidl.co.uk",
+"POUNDL":"商店🏬Poundland",
+"One Pl":"餐饮🦐",
+"ZTL*VN":"可能是商店🏬",
+"SHORYU":"餐饮🦐",
+"iZ *Un":"可能是小店📦或自动售货机",
+"PP*785":"Paypal"
+
+
+
+}
+
 import sqlite3, re, json
 from flask import Flask, render_template, request, jsonify, Blueprint
 from datetime import datetime, timedelta
 from functions.standardtime import timestamp_to_datetime
-
-DATABASE = 'database/mydatabase.db'
 
 if __name__ == '__main__':
     app_bank = Flask(__name__)
 else:
     app_bank=Blueprint('app_bank', __name__)
 
-
+def merchant_classification(merchant_name):
+    if merchant_name=="":
+        return merchant_name
+    try:
+        merchant_type=merchant[merchant_name]
+        return(f"{merchant_name}({merchant_type})")
+    except Exception:
+        return merchant_name
+    
 def get_timestamp_range(year, month):
     try:
         year = int(year)
@@ -51,6 +154,8 @@ class Bank():
                 direction=-1
             elif "撤销" in content:
                 merchant=content[content.find("在")+1:content.find("撤销")]
+                if merchant=="":
+                    merchant="撤销支付"
                 amount=content[content.find("撤销")+2:content.find("元")]
                 direction=1
             elif "存入" in content:
@@ -65,6 +170,7 @@ class Bank():
                 merchant="";amount=""
             if merchant=="":
                 merchant="UNKOWN"
+            merchant=merchant_classification(merchant)
             if amount!="":
                 unit=amount[:3]
                 amount=direction*float(amount[3:].replace(",","").replace(" ",""))
