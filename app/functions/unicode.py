@@ -101,7 +101,7 @@ def RemoveTextThatProducesUnexpectedConsequence(text=""):
 def find_verification_code(text=""):
     try:
         lower_text = text.lower()
-        if 'verif' in lower_text or '验证' in lower_text or 'code' in lower_text:
+        if 'verif' in lower_text or '验证' in lower_text or 'code' in lower_text or '动态码' in lower_text:
             pattern = r'\d{4,6}'
             # pattern = r'\b[a-zA-Z0-9]{4,6}\b'
             # Looking for 4 to 6 digits
