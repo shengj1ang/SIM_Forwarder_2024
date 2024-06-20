@@ -231,7 +231,7 @@ def loop():
                          tg_send(f"【拒绝来电】 \n来自：{phonenum} {phonenum_self('space')}", queue=True)
                     else:
                          db.log("LOG",f"【拒绝来电】 \n来自：{phonenum} ({phone_location[1]}) {phonenum_self('space')}")
-                         tg_send("LOG",f"【拒绝来电】 \n来自：{phonenum} ({phone_location[1]}) {phonenum_self('space')}", queue=True)
+                         tg_send(f"【拒绝来电】 \n来自：{phonenum} ({phone_location[1]}) {phonenum_self('space')}", queue=True)
                  #向11位的手机号来电发送短信
                  if b'CLCC' in res:
                     re_phonenum=re.compile(r'\d{5,}')
