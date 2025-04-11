@@ -1,0 +1,23 @@
+192.168.1.248
+root@nanopi-r2s:~# 
+
+
+sudo apt update
+sudo apt --fix-broken install
+uname -a //查看内核
+下载linux-header
+	wget https://imola.armbian.com/beta/pool/main/l/linux-headers-current-rockchip64/linux-headers-current-rockchip64_25.5.0-trunk.20_arm64__6.12.12-Sd914-D7b0b-P083d-C67e9Heb51-HK01ba-Vc222-B8de6-R448a.deb -O linux-headers.deb
+	sudo dpkg -i linux-headers.deb
+
+wget https://imola.armbian.com/beta/pool/main/l/linux-6.6.58/linux-image-current-k3_25.5.0-trunk.20_arm64__6.6.58-Sa775-D7b0b-P0000-Cdbe0Heb51-HK01ba-Vc222-B8de6-R448a.deb
+sudo dpkg -i linux-image-current-k3_25.5.0-trunk.20_arm64__6.6.58-Sa775-D7b0b-P0000-Cdbe0Heb51-HK01ba-Vc222-B8de6-R448a.deb
+
+创建 build 软链接
+	sudo ln -s /usr/src/linux-headers-6.12.12-current-rockchip64 /lib/modules/$(uname -r)/build
+	ls -l /lib/modules/$(uname -r)/build
+sudo apt install -y linux-libc-dev
+
+编译
+	cd ch341ser_linux/
+	make clean
+	make
